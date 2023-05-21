@@ -11,13 +11,19 @@ const msgCampoObrigatorio = "Campo Obrigatório"
 const validationSchema = yup.object().shape({
         sku: yup.string().trim().required(msgCampoObrigatorio),
         nome: yup.string().trim().required(msgCampoObrigatorio),
-        descricao: yup.string()
-        .trim()
-        .required(msgCampoObrigatorio),
+        descricao: yup.string().trim().required(msgCampoObrigatorio),
         preco: yup.number()
         .required(msgCampoObrigatorio)
         .moreThan(0, "valor Deve ser maior que 0")
 })
+
+interface FormErros{
+    sku?: string;
+    nome?: string;
+    preco?: string;
+    descricao?: string;
+
+}
 
 export const CadastroProdutos: React.FC = () => {
 
@@ -30,6 +36,7 @@ export const CadastroProdutos: React.FC = () => {
     const [id, setId] = useState<string>()
     const [ cadastro, setCadastro ] = useState<string>('')
     const [messages, setMessages] = useState<Array<Alert>>([])
+    const [ errors, setErrors ] = useState<FormErros>({})
 
     const submit = () =>{
 
@@ -42,7 +49,7 @@ export const CadastroProdutos: React.FC = () => {
         }
 
         validationSchema.validate(produto).then(obj=>{
-
+            setErrors({})
             if(id){
                 service.atualizar(produto)
                 .then(response => {
@@ -64,10 +71,9 @@ export const CadastroProdutos: React.FC = () => {
         }).catch(err => {
             const field = err.path;
             const message = err.message;
-
-            setMessages([
-                { tipo:"danger", field, texto:message }
-            ])
+            setErrors({
+                [field]:message
+            })
         })
 
     }
@@ -99,6 +105,7 @@ export const CadastroProdutos: React.FC = () => {
                 value={sku}
                 id="inputSku" 
                 placeholder='Digite o SKU do Produto'
+                error={errors.sku}
                 />
 
                 <Input label='Preço: *' 
@@ -109,6 +116,7 @@ export const CadastroProdutos: React.FC = () => {
                 placeholder='Digite o Preço do Produto'
                 currency
                 maxLength={16}
+                error={errors.preco}
                 />
         
             </div>
@@ -120,6 +128,7 @@ export const CadastroProdutos: React.FC = () => {
                 value={nome}
                 id="inputNome" 
                 placeholder='Digite o Nome do Produtoo'
+                error={errors.nome}
                 />
             </div>
 
@@ -132,6 +141,9 @@ export const CadastroProdutos: React.FC = () => {
                     value={descricao}
                     onChange={e=> setDescricao(e.target.value)}  
                     placeholder='Digite a Descrição detalhada do Produto'/>
+                    { errors.descricao &&
+                    <p className='help is-danger'>{errors.descricao}</p>
+                    }
                 </div>
             </div>
             </div>
