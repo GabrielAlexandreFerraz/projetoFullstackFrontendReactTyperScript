@@ -1,51 +1,106 @@
 import { InputHTMLAttributes } from 'react'
 import { formatReal } from 'app/util/money'
+import { FormatUtils } from '@4us-dev/utils'
+
+
+const formatUtils = new FormatUtils();
+
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement>{
-    id: string,
-    onChange?:(value)=> void;
+    id: string;
     label: string;
     columnClasses?: string;
-    currency?: boolean;
     error?: string;
+    formatter?: (value: string) => string;
 }
 
 export const Input:React.FC<InputProps> = ({
-    onChange,
     label,
     columnClasses,
     id,
-    currency,
     error,
+    formatter,
+    onChange,
     ...inputProps
 }:InputProps) =>{
 
-    const onInputChange = ( event) =>{
-        
-            let value = event.target.value;
-
-            if(value && currency){
-                value = formatReal(value);
+    const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        const name = event.target.name;
+    
+        const formattedValue = (formatter && formatter(value)) || value;
+    
+        if (onChange) {
+          const customEvent = {
+            ...event,
+            target: {
+              ...event.target,
+              name,
+              value: formattedValue
             }
-
-            if(onChange){
-                onChange(value)
-            }
-        
-
-    }
+          };
+          onChange(customEvent);
+        }
+      };
+    
 
     return(
         <div className={`field column ${columnClasses}`}>
                 <label className='label' htmlFor={id}> {label}</label>
                 <div className='control'>
                     <input className='input'
-                    id={id}
-                    {...inputProps}
-                    onChange={onInputChange}/>
+                    onChange={onInputChange}
+                    id={id} {...inputProps}/>
                     {error && 
-                    <p className='help is-danger'>{ error }</p>}
+                        <p className='help is-danger'>{ error }</p>}
                 </div>
             </div>
     )
+}
+
+export const InputMoney: React.FC<InputProps> = (props: InputProps) => {
+    return(
+        <Input {...props} formatter={formatReal} />
+    )
+}
+
+export const InputCPF: React.FC<InputProps> = (props: InputProps) => {
+    return(
+        <Input {...props} formatter={formatUtils.formatCPF} />
+    )
+}
+export const InputTelefone: React.FC<InputProps> = (props: InputProps) => {
+  return(
+      <Input {...props} formatter={formatUtils.formatPhone} />
+  )
+}
+export const InputDate: React.FC<InputProps> = (props: InputProps) => {
+
+  const formatData = (value: string) => {
+    if (!value) {
+      return '';
+    }
+  
+    const data = formatUtils.formatOnlyIntegers(value);
+    const size = value.length;
+        
+    if (size <= 2) {
+      return data;
+    }
+  
+    if (size <= 4) {
+      return data.substring(0, 2) + "/" + data.substring(2, 4);
+    }
+  
+    if (size <= 6) {
+      return data.substring(0, 2) + "/" + data.substring(2, 4) + "/" + data.substring(4, 6);
+    }
+  
+    return '';
+  }
+
+
+  return(
+      <Input {...props} maxLength={10} formatter={formatData} />
+  )
 }

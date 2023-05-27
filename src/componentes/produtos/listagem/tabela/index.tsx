@@ -84,7 +84,7 @@ const ProdutoRow: React.FC<ProdutoRowProps> = ({
                 <button onClick={cancelaDelete} 
                     className="button is-rounded is-small">
                         Cancelar
-                        </button>
+                    </button>
                 }    
             </td>
         </tr>

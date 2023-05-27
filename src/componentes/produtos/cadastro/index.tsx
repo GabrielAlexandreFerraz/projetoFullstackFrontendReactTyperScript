@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Layout, Input, Message } from 'componentes'
+import { Layout, Input, InputMoney } from 'componentes'
 import { useProdutoService } from 'app/services'
 import { Produto } from 'app/models/produtos'
 import {converterEmBigDecimal, formatReal} from 'app/util/money'
@@ -120,20 +120,19 @@ export const CadastroProdutos: React.FC = () => {
             <div className='columns'>
                 <Input label='SKU: *' 
                 columnClasses='is-half'
-                onChange={setSku}
+                onChange={ e => setSku(e.target.value)}
                 value={sku}
                 id="inputSku" 
                 placeholder='Digite o SKU do Produto'
                 error={errors.sku}
                 />
 
-                <Input label='Preço: *' 
+                <InputMoney label='Preço: *' 
                 columnClasses='is-half'
-                onChange={setPreco}
+                onChange={e => setPreco(e.target.value)}
                 value={preco}
                 id="inputPreco" 
                 placeholder='Digite o Preço do Produto'
-                currency
                 maxLength={16}
                 error={errors.preco}
                 />
@@ -143,7 +142,7 @@ export const CadastroProdutos: React.FC = () => {
             <div className='columns'>
             <Input label='Nome: *' 
                 columnClasses='is-full'
-                onChange={setNome}
+                onChange={e => setNome(e.target.value)}
                 value={nome}
                 id="inputNome" 
                 placeholder='Digite o Nome do Produtoo'
