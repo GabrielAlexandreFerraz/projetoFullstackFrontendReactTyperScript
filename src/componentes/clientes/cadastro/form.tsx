@@ -25,7 +25,8 @@ export const ClienteForm: React.FC<ClienteFormProps> = ({
 
     const formik = useFormik<Cliente>({
         initialValues: {... formScheme, ... cliente  },
-        onSubmit
+        onSubmit,
+        enableReinitialize: true
     })
 
     return(
