@@ -1,4 +1,6 @@
 import type { AppProps } from 'next/app'
+import "primereact/resources/primereact.min.css"; 
+import "primereact/resources/themes/md-light-indigo/theme.css";
 import 'bulma/css/bulma.css'
 import 'componentes/common/loader/loader.css'
 
