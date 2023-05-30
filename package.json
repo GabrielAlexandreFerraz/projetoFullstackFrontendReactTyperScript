@@ -20,6 +20,7 @@
     "bulma": "^0.9.2",
     "formik": "^2.2.9",
     "next": "13.1.6",
+    "primeflex": "^2.0.0",
     "primereact": "^6.4.0",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
