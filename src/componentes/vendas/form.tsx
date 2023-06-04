@@ -1,6 +1,6 @@
 import { Cliente } from "app/models/clientes";
 import { Page } from "app/models/common/page";
-import { Venda } from "app/models/vendas"
+import { ItemVenda, Venda } from "app/models/vendas"
 import { useClienteService, useProdutoService } from "app/services";
 import { useFormik } from "formik"
 import { AutoComplete, AutoCompleteChangeParams, AutoCompleteCompleteMethodParams } from 'primereact/autocomplete'
@@ -8,8 +8,9 @@ import { useState } from "react";
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Produto } from "app/models/produtos";
-import { error } from "console";
-
+import { Dialog } from 'primereact/dialog'
+import { DataTable } from "primereact/datatable"
+import { Column } from "primereact/column";
 
 interface VendasFormProps{
     onSubmit: (venda: Venda) => void;
@@ -17,7 +18,7 @@ interface VendasFormProps{
 
 const formScheme: Venda = {
     cliente: null,
-    produtos: [],
+    itens: [],
     total: 0,
     formaPagamento: ''
 }
@@ -28,7 +29,9 @@ export const VendasForm: React.FC<VendasFormProps> = ({
 
     const clienteService = useClienteService();
     const produtoService = useProdutoService();
+    const [mensagem, setMensagem] = useState<String>('');
     const [codigoProduto, setCodigoProduto] = useState<String>('')
+    const [quantidadeProduto, setQuantidadeProduto] = useState<number>(0);
     const [produto, setProduto] = useState<Produto>(null);
     const [listaClientes, setListaClientes ] = useState<Page<Cliente>>({
         content: [],
@@ -55,16 +58,54 @@ export const VendasForm: React.FC<VendasFormProps> = ({
     }
     
     const handleCodigoProdutoSelect = (event) =>{
+        if(codigoProduto){
             produtoService.carregarProdutos(codigoProduto)
             .then(produtoEncontrado => setProduto(produtoEncontrado))
-            .catch(error => console.log(error))
+            .catch(error => {
+                setMensagem("Produto não encontrado")
+            })
+        }
     }
 
     const handleAddProduto = () => {
-        const produtosJaAdicionados = formik.values.produtos;
-        produtosJaAdicionados.push(produto);
+        const itensAdicionados = formik.values.itens;
+        const jaExisteOItemNaVenda = itensAdicionados?.some((iv: ItemVenda)=>{
+            return iv.produto.id === produto.id
+        })
+        if(jaExisteOItemNaVenda){
+            itensAdicionados?.forEach( (iv: ItemVenda) => {
+                if(iv.produto.id === produto.id){
+                    iv.quantidade += quantidadeProduto
+                }
+            })
+
+        }else{
+            itensAdicionados.push({
+                produto: produto,
+                quantidade: quantidadeProduto
+            });
+        }
         setProduto(null)
         setCodigoProduto('')
+        setQuantidadeProduto(0)
+    }
+    
+    const handleFecharDialogProdutoNaoEncontrado = () => {
+        setMensagem('')
+        setCodigoProduto('')
+        setProduto(null)
+    }
+
+    const dialogMensagemFooter = () => {
+        return(
+            <div>
+                <Button label="Fechar" onClick={handleFecharDialogProdutoNaoEncontrado}/>
+            </div>
+        )
+    }
+
+    const disableAddProdutoButton = () => {
+        return !produto || !quantidadeProduto
     }
 
     return(
@@ -90,7 +131,7 @@ export const VendasForm: React.FC<VendasFormProps> = ({
                                 id="codigoProduto" 
                                 onBlur={handleCodigoProdutoSelect}
                                 value={codigoProduto}
-                                onChange={e => setCodigoProduto(e.target.value)}
+                                onChange={e => setCodigoProduto(parseInt(e.target.value))}
                     />
                             <label htmlFor="codigoProduto">Código</label>
                         </span>
@@ -102,12 +143,35 @@ export const VendasForm: React.FC<VendasFormProps> = ({
 
                         <div className="p-col-2">
                             <div className="p-float-label">
-                                <InputText  id="qtdProduto"/>
+                                <InputText  id="qtdProduto" 
+                                            value={quantidadeProduto}
+                                            onChange={e => setQuantidadeProduto(parseInt(e.target.value))}/>
                                 <label htmlFor="qtdProduto">QTD</label>
                             </div>
                         </div>
                     <div className="p-col-2">
-                            <Button label="Adicionar" onClick={handleAddProduto}/>
+                            <Button type="button"
+                                    disabled={disableAddProdutoButton()} 
+                                    label="Adicionar" 
+                                    onClick={handleAddProduto}/>
+                    </div>
+
+                    <div className="p-col-12">
+                        <DataTable value={formik.values.itens}>
+                        <Column field="produto.id" header='Código'/>
+                        <Column field="produto.sku" header='SKU'/>
+                        <Column field="produto.nome" header='Produto'/>
+                        <Column field="produto.preco" header='PrecoUnitario'/>
+                        <Column field="quantidade" header='QTD' />
+                        <Column  header='Total' body={ (iv: ItemVenda)=> {
+                            return(
+                                <div>
+                                    { iv.produto.preco * iv.quantidade }
+                                </div>
+                            )
+                        }}/>
+                        </DataTable>
+
                     </div>
 
                 </div>
@@ -115,6 +179,11 @@ export const VendasForm: React.FC<VendasFormProps> = ({
                 <Button type="submit" label="Finalizar"/>
 
             </div>
+            <Dialog header='Atenção ' position="top" 
+            visible={!!mensagem} onHide={handleFecharDialogProdutoNaoEncontrado}
+            footer={dialogMensagemFooter}>
+                {mensagem}
+            </Dialog> 
 
         </form>
     )
