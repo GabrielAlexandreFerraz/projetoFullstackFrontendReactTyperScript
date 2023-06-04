@@ -29,11 +29,13 @@ export const VendasForm: React.FC<VendasFormProps> = ({
 
     const clienteService = useClienteService();
     const produtoService = useProdutoService();
-    const [mensagem, setMensagem] = useState<String>('');
-    const [codigoProduto, setCodigoProduto] = useState<String>('')
-    const [quantidadeProduto, setQuantidadeProduto] = useState<number>(0);
-    const [produto, setProduto] = useState<Produto>(null);
-    const [listaClientes, setListaClientes ] = useState<Page<Cliente>>({
+    const [ listaProdutos, setListaProdutos ] = useState<Produto[]>([])
+    const [ listaFiltradaProdutos, setListaFiltradaProdutos ] = useState<Produto[]>([])
+    const [ mensagem, setMensagem ] = useState<String>('');
+    const [ codigoProduto, setCodigoProduto ] = useState<String>('')
+    const [ quantidadeProduto, setQuantidadeProduto ] = useState<number>(0);
+    const [ produto, setProduto ] = useState<Produto>(null);
+    const [ listaClientes, setListaClientes ] = useState<Page<Cliente>>({
         content: [],
         first: 0,
         number: 0,
@@ -96,6 +98,19 @@ export const VendasForm: React.FC<VendasFormProps> = ({
         setProduto(null)
     }
 
+    const HandleProdutoAutoComplete = async ( e: AutoCompleteCompleteMethodParams) => {
+
+        if(!listaProdutos.length){
+            const produtosEncontrados = await produtoService.listar();
+            setListaProdutos(produtosEncontrados)
+        }
+        const produtosEncontrados =  listaProdutos.filter((produto: Produto) => {
+            return produto.nome?.toUpperCase().includes(e.query.toUpperCase())
+        })
+        
+        setListaFiltradaProdutos(produtosEncontrados)
+}
+
     const dialogMensagemFooter = () => {
         return(
             <div>
@@ -138,7 +153,14 @@ export const VendasForm: React.FC<VendasFormProps> = ({
                     </div>
 
                     <div className="p-col-6">
-                          <AutoComplete value={produto} field="nome"/> 
+                          <AutoComplete suggestions={listaFiltradaProdutos}
+                                        completeMethod={HandleProdutoAutoComplete} 
+                                        id="produto"
+                                        name="produto"
+                                        value={produto} 
+                                        field="nome"
+                                        onChange={e => setProduto(e.value)} 
+                                        /> 
                     </div>
 
                         <div className="p-col-2">
