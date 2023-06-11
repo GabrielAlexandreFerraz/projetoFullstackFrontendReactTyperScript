@@ -6,11 +6,8 @@ import "primereact/resources/themes/md-light-indigo/theme.css";
 import 'bulma/css/bulma.css'
 import 'componentes/common/loader/loader.css'
 
-export default function App({Component, pageProps: { session, ...pageProps },
-}) {
-  return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
-  )
+function MyApp({ Component, pageProps } : AppProps) {
+  return <Component {...pageProps} />
 }
+
+export default MyApp
