@@ -3,6 +3,7 @@ import { GetStaticProps } from 'next';
 import { Layout, Dashboard } from 'componentes'
 import { useDashboardService } from 'app/services';
 import { DashboardData } from 'app/models/dashboard';
+import { Footer } from 'componentes/footer';
 
 interface HomeProps{
   dashboard: DashboardData;
@@ -22,7 +23,9 @@ const Home:React.FC<HomeProps> = (props: HomeProps) =>{
                   vendas={props.dashboard.vendas}
                   vendasPorMes={props.dashboard.vendasPorMes}/>      
 
+      
       </Layout>
+      
     </div>
     
     )

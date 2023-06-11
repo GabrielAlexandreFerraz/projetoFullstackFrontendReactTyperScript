@@ -56,6 +56,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
 
     return(
+        <div>
         <div className="p-fluid">
             <div className="p-grid">
                 
@@ -88,6 +89,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             style={{position: 'relative', width: '40%'}} />
                 </div>
             </div>
+        </div>
         </div>
     )
 }

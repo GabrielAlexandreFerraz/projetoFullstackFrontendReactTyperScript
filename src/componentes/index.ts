@@ -6,4 +6,3 @@ export  {Input, InputMoney, InputCPF, InputTelefone, InputDate, Message, Loader}
 export { Vendas} from './vendas'
 export { Dashboard } from './dashboard'
 
-

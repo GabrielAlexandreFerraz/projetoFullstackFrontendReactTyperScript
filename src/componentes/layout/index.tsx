@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import { Menu } from './menu'
 import { Message } from 'componentes';
 import {Alert} from 'componentes/message'
+import { Footer } from 'componentes/footer';
+import { Cabecario } from 'componentes/header';
 
 interface LayoutProps{
     titulo?: string;
@@ -12,6 +14,7 @@ interface LayoutProps{
 export const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
     return(
         <div className="app" >
+            
             <section className="main-content columns is-fullheight">
             <Menu />
                 <div className="container colums is-10" >
@@ -37,6 +40,7 @@ export const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
                 </div>
 
             </section>
+            <Footer />
         </div>
     )
 }

@@ -21,6 +21,7 @@
     "chart.js": "^3.4.1",
     "formik": "^2.2.9",
     "next": "13.1.6",
+    "next-auth": "^4.22.1",
     "primeflex": "^2.0.0",
     "primereact": "^6.4.0",
     "prop-types": "^15.8.1",
@@ -30,5 +31,8 @@
     "swr": "^2.1.5",
     "typescript": "4.9.5",
     "yup": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/next-auth": "^3.15.0"
   }
 }
