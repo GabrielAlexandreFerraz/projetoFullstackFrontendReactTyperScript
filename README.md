@@ -32,8 +32,8 @@ Estão aqui alguns Prints das telas de Aplicação
 - BulmaIO
 - PrimeReact
 - Formik
-- -Axios
-- -Yup
+- Axios
+- Yup
 
 ```bash
 # clonar repositório
